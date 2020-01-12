@@ -26,8 +26,16 @@ int main()
 	assert((s2 == s2) == true);
 	assert((s2 == s4) == false);
 	s1.Reverse();
-	for (size_t i = 0; i < s1.GetLength(); i++)
+	for (unsigned int i = 0; i < s1.GetLength() + 1; i++)
 	{
 		assert(s1.GetCString()[i] == "olleH"[i]);
 	}
+	s1.Reverse();
+	s1.RemoveAt(1);
+	for (unsigned int i = 0; i < s1.GetLength() + 1; i++)
+	{
+		assert(s1.GetCString()[i] == "Hllo"[i]);
+	}
+	char* p = nullptr;
+	MyString ss(p);
 }

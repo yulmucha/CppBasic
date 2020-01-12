@@ -4,6 +4,11 @@ MyString::MyString(const char* s)
 	: mLength(0)
 	, mCString(nullptr)
 {
+	if (s == nullptr)
+	{
+		return;
+	}
+
 	const char* p = s;
 	unsigned int length = 0;
 	while (*p != '\0')
@@ -14,7 +19,7 @@ MyString::MyString(const char* s)
 
 	mCString = new char[length + 1];
 	mLength = length;
-	for (size_t i = 0; i < mLength + 1; i++)
+	for (unsigned int i = 0; i < mLength + 1; i++)
 	{
 		mCString[i] = s[i];
 	}
@@ -44,6 +49,11 @@ const char* MyString::GetCString()
 
 void MyString::Append(const char* s)
 {
+	if (s == nullptr)
+	{
+		return;
+	}
+
 	const char* p = s;
 	unsigned int otherLength = 0;
 	while (*p != '\0')
@@ -54,11 +64,11 @@ void MyString::Append(const char* s)
 
 	unsigned int newLength = mLength + otherLength;
 	char* newCString = new char[newLength + 1];
-	for (size_t i = 0; i < mLength; i++)
+	for (unsigned int i = 0; i < mLength; i++)
 	{
 		newCString[i] = mCString[i];
 	}
-	for (size_t i = 0; i < otherLength; i++)
+	for (unsigned int i = 0; i < otherLength; i++)
 	{
 		newCString[mLength + i] = s[i];
 	}
@@ -71,13 +81,18 @@ void MyString::Append(const char* s)
 
 MyString MyString::operator+(const MyString& other) const
 {
+	if (other.mLength == 0)
+	{
+		return MyString(mCString);
+	}
+
 	unsigned int newLength = mLength + other.mLength;
 	char* newCString = new char[newLength + 1];
-	for (size_t i = 0; i < mLength; i++)
+	for (unsigned int i = 0; i < mLength; i++)
 	{
 		newCString[i] = mCString[i];
 	}
-	for (size_t i = 0; i < other.mLength; i++)
+	for (unsigned int i = 0; i < other.mLength; i++)
 	{
 		newCString[mLength + i] = other.mCString[i];
 	}
@@ -88,6 +103,11 @@ MyString MyString::operator+(const MyString& other) const
 
 int MyString::IndexOf(const char* s)
 {
+	if (s == nullptr)
+	{
+		return -1;
+	}
+
 	const char* p = s;
 	unsigned int targetLength = 0;
 	while (*p != '\0')
@@ -96,11 +116,11 @@ int MyString::IndexOf(const char* s)
 		p += 1;
 	}
 
-	for (size_t i = 0; i < mLength - targetLength + 1; i++)
+	for (unsigned int i = 0; i < mLength - targetLength + 1; i++)
 	{
 		bool isEqual = false;
-		size_t k = 0;
-		for (size_t j = i; j < i + targetLength; j++)
+		unsigned int k = 0;
+		for (unsigned int j = i; j < i + targetLength; j++)
 		{
 			if (mCString[j] != s[k])
 			{
@@ -118,9 +138,35 @@ int MyString::IndexOf(const char* s)
 	return -1;
 }
 
+bool MyString::RemoveAt(unsigned int index)
+{
+	if (index >= mLength)
+	{
+		return false;
+	}
+
+	char* p = new char[mLength];
+	p[mLength - 1] = '\0';
+	unsigned int j = 0;
+	for (unsigned int i = 0; i < index; i++)
+	{
+		p[j] = mCString[i];
+		j++;
+	}
+	for (unsigned int i = index + 1; i < mLength; i++)
+	{
+		p[j] = mCString[i];
+		j++;
+	}
+	delete[] mCString;
+	mCString = p;
+	mLength--;
+	return true;
+}
+
 void MyString::ToLower()
 {
-	for (size_t i = 0; i < mLength; i++)
+	for (unsigned int i = 0; i < mLength; i++)
 	{
 		if (mCString[i] >= 65 && mCString[i] <= 90)
 		{
@@ -131,7 +177,7 @@ void MyString::ToLower()
 
 void MyString::ToUpper()
 {
-	for (size_t i = 0; i < mLength; i++)
+	for (unsigned int i = 0; i < mLength; i++)
 	{
 		if (mCString[i] >= 97 && mCString[i] <= 122)
 		{
@@ -143,7 +189,7 @@ void MyString::ToUpper()
 void MyString::Reverse()
 {
 	char temp;
-	for (size_t i = 0; i < mLength / 2; i++)
+	for (unsigned int i = 0; i < mLength / 2; i++)
 	{
 		temp = mCString[i];
 		mCString[i] = mCString[mLength - 1 - i];
@@ -153,7 +199,9 @@ void MyString::Reverse()
 
 bool MyString::operator==(const MyString& rhs) const
 {
-	for (size_t i = 0; i < mLength + 1; i++)
+	unsigned int length = mLength > rhs.mLength ? mLength : rhs.mLength;
+
+	for (unsigned int i = 0; i < length + 1; i++)
 	{
 		if (mCString[i] != rhs.mCString[i])
 		{
