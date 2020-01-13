@@ -25,6 +25,17 @@ MyString::MyString(const char* s)
 	}
 }
 
+MyString::MyString(const MyString& other)
+	: mLength(other.mLength)
+	, mCString(nullptr)
+{
+	mCString = new char[mLength + 1];
+	for (unsigned int i = 0; i < mLength + 1; i++)
+	{
+		mCString[i] = other.mCString[i];
+	}
+}
+
 MyString::~MyString()
 {
 	mLength = 0;
@@ -136,6 +147,74 @@ int MyString::IndexOf(const char* s)
 		}
 	}
 	return -1;
+}
+
+int MyString::LastIndexOf(const char* s)
+{
+	if (s == nullptr)
+	{
+		return -1;
+	}
+
+	const char* p = s;
+	unsigned int targetLength = 0;
+	while (*p != '\0')
+	{
+		targetLength += 1;
+		p += 1;
+	}
+
+	for (unsigned int i = mLength - 1; i >= targetLength - 1; i--)
+	{
+		bool isEqual = false;
+		unsigned int k = targetLength - 1;
+		for (unsigned int j = i; j > i - targetLength; j--)
+		{
+			if (mCString[j] != s[k])
+			{
+				isEqual = false;
+				break;
+			}
+			isEqual = true;
+			k--;
+		}
+		if (isEqual)
+		{
+			return i - targetLength + 1;
+		}
+	}
+	return -1;
+}
+
+void MyString::Interleave(const char* s)
+{
+	if (s == nullptr)
+	{
+		return;
+	}
+
+	const char* p = s;
+	unsigned int otherLength = 0;
+	while (*p != '\0')
+	{
+		otherLength += 1;
+		p += 1;
+	}
+
+	unsigned int totalLegnth = mLength + otherLength;
+	char* interleavedCString = new char[totalLegnth + 1];
+	for (unsigned int i = 0; i < mLength + 1; i++)
+	{
+		interleavedCString[i * 2] = mCString[i];
+	}
+	for (unsigned int i = 0; i < otherLength; i++)
+	{
+		interleavedCString[i * 2 + 1] = s[i];
+	}
+
+	delete[] mCString;
+	mCString = interleavedCString;
+	mLength = totalLegnth;
 }
 
 bool MyString::RemoveAt(unsigned int index)
