@@ -1,6 +1,7 @@
 #include <assert.h>
-#include "MyString.h"
 #include <iostream>
+#include "MyString.h"
+
 int main()
 {
 	MyString s1("Hello");
@@ -48,7 +49,7 @@ int main()
 		assert(s3.GetCString()[i] == "ireaT "[i]);
 	}
 	s3.Reverse();
-	
+
 	s3.RemoveAt(1);
 	for (unsigned int i = 0; i < s3.GetLength() + 1; i++)
 	{
@@ -77,4 +78,34 @@ int main()
 	assert(s10.LastIndexOf("be") == 16);
 	assert(s10.IndexOf("o") == 1);
 	assert(s10.LastIndexOf("o") == 14);
+
+	MyString s11("Taeri");
+	s11.PadLeft(10);
+	for (unsigned int i = 0; i < s11.GetLength() + 1; i++)
+	{
+		assert(s11.GetCString()[i] == "     Taeri"[i]);
+	}
+
+	MyString s12("Taeri");
+	s12.PadLeft(10, '*');
+	for (unsigned int i = 0; i < s12.GetLength() + 1; i++)
+	{
+		assert(s12.GetCString()[i] == "*****Taeri"[i]);
+	}
+
+	MyString s13("Taeri");
+	s13.PadRight(10);
+	for (unsigned int i = 0; i < s13.GetLength() + 1; i++)
+	{
+		assert(s13.GetCString()[i] == "Taeri     "[i]);
+	}
+
+	MyString s14("Taeri");
+	s14.PadRight(10, '*');
+	for (unsigned int i = 0; i < s14.GetLength() + 1; i++)
+	{
+		assert(s14.GetCString()[i] == "Taeri*****"[i]);
+	}
+
+	std::cout << s14 << std::endl;
 }

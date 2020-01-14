@@ -243,6 +243,98 @@ bool MyString::RemoveAt(unsigned int index)
 	return true;
 }
 
+void MyString::PadLeft(unsigned int totalLength)
+{
+	if (totalLength < mLength)
+	{
+		return;
+	}
+
+	char* p = new char[totalLength + 1];
+	unsigned int spaceLength = totalLength - mLength;
+	for (unsigned int i = 0; i < spaceLength; i++)
+	{
+		p[i] = ' ';
+	}
+	for (unsigned int i = spaceLength; i < totalLength + 1; i++)
+	{
+		p[i] = mCString[i - spaceLength];
+	}
+
+	delete[] mCString;
+	mCString = p;
+	mLength = totalLength;
+}
+
+void MyString::PadLeft(unsigned int totalLength, const char c)
+{
+	if (totalLength < mLength)
+	{
+		return;
+	}
+
+	char* p = new char[totalLength + 1];
+	unsigned int spaceLength = totalLength - mLength;
+	for (unsigned int i = 0; i < spaceLength; i++)
+	{
+		p[i] = c;
+	}
+	for (unsigned int i = spaceLength; i < totalLength + 1; i++)
+	{
+		p[i] = mCString[i - spaceLength];
+	}
+
+	delete[] mCString;
+	mCString = p;
+	mLength = totalLength;
+}
+
+void MyString::PadRight(unsigned int totalLength)
+{
+	if (totalLength < mLength)
+	{
+		return;
+	}
+
+	char* p = new char[totalLength + 1];
+	for (unsigned int i = 0; i < mLength; i++)
+	{
+		p[i] = mCString[i];
+	}
+	for (unsigned int i = mLength; i < totalLength; i++)
+	{
+		p[i] = ' ';
+	}
+	p[totalLength] = '\0';
+
+	delete[] mCString;
+	mCString = p;
+	mLength = totalLength;
+}
+
+void MyString::PadRight(unsigned int totalLength, const char c)
+{
+	if (totalLength < mLength)
+	{
+		return;
+	}
+
+	char* p = new char[totalLength + 1];
+	for (unsigned int i = 0; i < mLength; i++)
+	{
+		p[i] = mCString[i];
+	}
+	for (unsigned int i = mLength; i < totalLength; i++)
+	{
+		p[i] = c;
+	}
+	p[totalLength] = '\0';
+
+	delete[] mCString;
+	mCString = p;
+	mLength = totalLength;
+}
+
 void MyString::ToLower()
 {
 	for (unsigned int i = 0; i < mLength; i++)
@@ -288,4 +380,10 @@ bool MyString::operator==(const MyString& rhs) const
 		}
 	}
 	return true;
+}
+
+std::ostream& operator<<(std::ostream& os, MyString& s)
+{
+	os << s.GetCString();
+	return os;
 }
