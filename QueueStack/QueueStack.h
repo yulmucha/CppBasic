@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include <queue>
 #include <stack>
 
@@ -20,58 +21,47 @@ public:
 private:
 	const unsigned int mMaxStackSize;
 	unsigned int mCount;
-	//T mMax;
-	//T mMin;
 	T mSum;
+	T mMax;
+	T mMin;
 	std::queue<std::stack<T>> mNumbers;
 };
 
 template<typename T>
 inline QueueStack<T>::QueueStack(const unsigned int maxStackSize)
 	: mMaxStackSize(maxStackSize)
-	//, mMax(0)
-	//, mMin(0)
 	, mCount(0)
 	, mSum(0)
+	, mMax(std::numeric_limits<T>::lowest())
+	, mMin(std::numeric_limits<T>::max())
 {
 }
 
 template<typename T>
 inline void QueueStack<T>::Enqueue(const T number)
 {
-	if (mNumbers.empty())
+	if (mNumbers.empty() || mNumbers.back().size() >= mMaxStackSize)
 	{
 		std::stack<T> s;
 		s.push(number);
+		
 		mNumbers.push(s);
-		mCount++;
-		//mMax = number;
-		//mMin = number;
 	}
 	else
 	{
-		if (mNumbers.back().size() < mMaxStackSize)
-		{
-			mNumbers.back().push(number);
-			mCount++;
-		}
-		else
-		{
-			std::stack<T> s;
-			s.push(number);
-			mNumbers.push(s);
-			mCount++;
-		}
-		
-		//if (mMax < number)
-		//{
-		//	mMax = number;
-		//}
-		//if (mMin > number)
-		//{
-		//	mMin = number;
-		//}
+		mNumbers.back().push(number);
 	}
+	
+	if (mMax < number)
+	{
+		mMax = number;
+	}
+	if (mMin > number)
+	{
+		mMin = number;
+	}
+	
+	mCount++;
 	mSum += number;
 }
 
@@ -92,19 +82,64 @@ inline T QueueStack<T>::Dequeue()
 	{
 		mNumbers.pop();
 	}
+
+	if (mNumbers.empty())
+	{
+		mMax = std::numeric_limits<T>::lowest();
+		mMin = std::numeric_limits<T>::max();
+	}
+	else
+	{
+		if (dequeuedNumber >= mMax)
+		{
+			mMax = std::numeric_limits<T>::lowest();
+			std::queue<std::stack<T>> temp(mNumbers);
+			while (!temp.empty())
+			{
+				while (!temp.front().empty())
+				{
+					if (mMax < temp.front().top())
+					{
+						mMax = temp.front().top();
+					}
+					temp.front().pop();
+				}
+				temp.pop();
+			}
+		}
+
+		if (dequeuedNumber <= mMin)
+		{
+			mMin = std::numeric_limits<T>::max();
+			std::queue<std::stack<T>> temp(mNumbers);
+			while (!temp.empty())
+			{
+				while (!temp.front().empty())
+				{
+					if (mMin > temp.front().top())
+					{
+						mMin = temp.front().top();
+					}
+					temp.front().pop();
+				}
+				temp.pop();
+			}
+		}
+	}
+
 	return dequeuedNumber;
 }
 
 template<typename T>
 inline T QueueStack<T>::Max() const
 {
-	return T();
+	return mMax;
 }
 
 template<typename T>
 inline T QueueStack<T>::Min() const
 {
-	return T();
+	return mMin;
 }
 
 template<typename T>
