@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-template <typename T, unsigned int N>
+template <typename T, size_t N>
 class FixedVector
 {
     FixedVector() { std::cout << "Normal Fixed Vector" << std::endl; };
 };
 
-template <unsigned int N>
+template <size_t N>
 class FixedVector<bool, N>
 {
 public:
@@ -16,7 +16,7 @@ public:
     bool Add(const bool b);
     bool Remove(const bool b);
     bool Get(const unsigned int index) const;
-    bool operator[](const unsigned int index);
+    bool operator[](const unsigned int index) const;
     int GetIndex(const bool b) const;
     size_t GetSize() const;
     size_t GetCapacity() const;
@@ -30,7 +30,7 @@ private:
     size_t mSize;
 };
 
-template <unsigned int N>
+template <size_t N>
 FixedVector<bool, N>::FixedVector()
     : mSize(0)
 {
@@ -41,7 +41,7 @@ FixedVector<bool, N>::FixedVector()
     }
 }
 
-template <unsigned int N>
+template <size_t N>
 bool FixedVector<bool, N>::Add(const bool b)
 {
     if (mSize >= N)
@@ -57,14 +57,65 @@ bool FixedVector<bool, N>::Add(const bool b)
     return true;
 }
 
-template <unsigned int N>
-bool FixedVector<bool, N>::Get(const unsigned int index) const
+template <size_t N>
+bool FixedVector<bool, N>::Remove(const bool b)
 {
-    return mArr[index / 32] & (1 << (index % 32));
+    int index = GetIndex(b);
+    if (index < 0)
+    {
+        return false;
+    }
+    for (size_t i = index; i < mSize - 1; i++)
+    {
+        bool nextElement = Get(i + 1);
+        if (nextElement == true)
+        {
+            mArr[i / NUM_OF_BIT] |= (1 << (i % NUM_OF_BIT));
+        }
+        else
+        {
+            mArr[i / NUM_OF_BIT] &= ~(1 << (i % NUM_OF_BIT));
+        }
+    }
+    mSize--;
+    return true;
 }
 
-template <unsigned int N>
+template <size_t N>
+bool FixedVector<bool, N>::Get(const unsigned int index) const
+{
+    return mArr[index / NUM_OF_BIT] & (1 << (index % NUM_OF_BIT));
+}
+
+template <size_t N>
+bool FixedVector<bool, N>::operator[](const unsigned int index) const
+{
+    return Get(index);
+}
+
+template <size_t N>
+int FixedVector<bool, N>::GetIndex(bool b) const
+{
+    for (size_t i = 0; i < mSize; i++)
+    {
+        bool e = (mArr[i / NUM_OF_BIT] & (1 << (i % NUM_OF_BIT))) > 0 ? true : false;
+        if (e == b)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+template <size_t N>
 size_t FixedVector<bool, N>::GetSize() const
 {
     return mSize;
+}
+
+template <size_t N>
+size_t FixedVector<bool, N>::GetCapacity() const
+{
+    return N;
 }
